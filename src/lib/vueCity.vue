@@ -1,7 +1,7 @@
 <template>
     <transition name="slide">
         <div class="vue-city-container"> 
-            <div class="vue-city-content" @touchstart="cityListTouchstart" @touchmove="cityListTouchmove" ref="vueCityContent">
+            <div class="vue-city-content" @touchstart="cityListTouchstart" @touchend="cityListTouchend" ref="vueCityContent">
             <!-- <div class="vue-city-content" ref="vueCityContent"> -->
                 <div class="hot-city-list-box">
                     <span class="hot-title">热门城市</span>
@@ -58,10 +58,13 @@ export default {
                 chars:['A','B','C','D','E','F','G','H','J','K','L','M','N','P','Q','R','S','T','W','X','Y','Z'],
                 startY2:0,
                 endY2:0,
-                distance:0
+                distance:0,
+                domHeight:0
             }
+        },  
+        mounted(){
+            this.domHeight = this.$refs.vueCityContent
         },
-
         methods: {
             hotCityChange(cityName){
 
@@ -99,15 +102,20 @@ export default {
             cityListTouchstart(e){
                 this.startY2 = e.changedTouches[0].pageY;
             },
-            cityListTouchmove(e){
+            cityListTouchend(e){
+                // event.preventDefault();
+                let xdistance = parseInt(this.$refs.vueCityContent.style.transform.replace(/[^0-9]+/g, '')||0);
                 this.endY2 = e.changedTouches[0].pageY;
                 let countY = Math.floor(this.endY2 - this.startY2);
-                this.distance += countY;
-                if(this.distance<0){
+                xdistance += countY;
+                if(this.distance < 0){
                     this.distance = 0;
-                }                
-                console.log("距离",this.distance);
-                this.$refs.vueCityContent.style.transform = `translateY(${this.distance}px)`;    
+                }       
+                if(this.distance > this.domHeight){
+                    this.distance = this.domHeight;
+                }         
+                console.log("距离",xdistance);
+                this.$refs.vueCityContent.style.transform = `translateY(${xdistance}px)`;    
             },            
             
         }
