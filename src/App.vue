@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import vueCity from './lib//vueCity.vue'
+import vueCity from './lib/demo.vue'
 export default {
     components:{
         vueCity

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "amfe-flexible": "^2.2.1",
+    "better-scroll": "^1.13.4",
     "vue": "^2.5.11"
   },
   "browserslist": [

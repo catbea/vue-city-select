@@ -1,12 +1,11 @@
 <template>
     <transition name="slide">
-        <div class="vue-city-container"> 
-            <div class="vue-city-content" @touchstart="cityListTouchstart" @touchend="cityListTouchend" ref="vueCityContent">
-            <!-- <div class="vue-city-content" ref="vueCityContent"> -->
+        <div class="vue-city-container" ref="vueContainer"> 
+            <div class="vue-city-content" ref="vueCityContent">
                 <div class="hot-city-list-box">
                     <span class="hot-title">热门城市</span>
                     <div class="hot-city-list">
-                        <span v-for="(item,index) in hotCityList" :key="index" @click="hotCityChange(item.cityName)">{{item.cityName}}</span>
+                        <span v-for="(item,index) in hotCityList" :key="index" @click="clickCity(item.cityName)">{{item.cityName}}</span>
                     </div>
                 </div>
                 <div class="city-sort-box">
@@ -25,19 +24,20 @@
                     </li>
                 </ul>
             </div>
+            <div class="toast" v-show="isSHowToast">
+                {{toast}}
+            </div>
         </div>
 	</transition>
 </template>
 <script>
+import BScroll from 'better-scroll';
 const cityList = require('./city.js').citys;
-console.log(cityList);
 export default {
         props: {
-           
-        },
-        data: function(){
-            return {
-                hotCityList:[
+           hotCityList:{
+               probeType:Array,
+               default:[
                     {cityName:"深圳市"},
                     {cityName:"上海市"},
                     {cityName:"北京市"},
@@ -47,7 +47,13 @@ export default {
                     {cityName:"天津市"},
                     {cityName:"南京市"},
                     {cityName:"成都市"}
-                ],
+                ]
+           }
+        },
+        data: function(){
+            return {
+                isSHowToast:false,
+                toast:"",               
                 cityList:cityList,
                 LIHeight:0,
                 startY:0,
@@ -58,65 +64,66 @@ export default {
                 chars:['A','B','C','D','E','F','G','H','J','K','L','M','N','P','Q','R','S','T','W','X','Y','Z'],
                 startY2:0,
                 endY2:0,
-                distance:0,
-                domHeight:0
+                scroll:null
             }
-        },  
+        }, 
+
+        created(){
+
+        },
         mounted(){
-            this.domHeight = this.$refs.vueCityContent
+             this.$nextTick(()=>{
+                this.initScroll();    
+            })
         },
         methods: {
-            hotCityChange(cityName){
-
+            initScroll(){
+                this.$nextTick(()=>{
+                    if(!this.scroll){
+                        this.scroll = new BScroll(this.$refs.vueContainer,{
+                            click:true,
+                            probeType:1
+                        });
+                    }else{
+                        this.scroll.refresh();
+                    }
+                })
             },
             clickCity(cityName){
-
+                this.$emit('changeCity',cityName);
             },
             cityTouchstart(e){
-                console.log("cityTouchstart",e)
+                this.isSHowToast = true;
                 this.LIHeight = e.target.offsetHeight;
                 this.startY = e.changedTouches[0].pageY;
-                this.touchStratSelected = e.target.outerText;
-                this.saveCharIndex = this.chars.indexOf(this.touchStratSelected);
-
-                console.log(this.chars.indexOf(this.touchStratSelected));                
+                this.toast = this.touchStratSelected = e.target.outerText;
+                this.saveCharIndex = this.chars.indexOf(this.touchStratSelected);              
             },
             cityTouchmove(e){
                 let index = this.saveCharIndex;
                 this.endY = e.changedTouches[0].pageY;
                 let countY = Math.ceil((this.endY - this.startY)/this.LIHeight);
                 index += countY;
-                this.touchMouveSelected = this.chars[index];
-                console.log(this.endY,this.touchMouveSelected,countY);
+                this.toast = this.touchMouveSelected = this.chars[index];                 
             },
             cityTouchend(e){
+                console.log(e);
+                this.isSHowToast = false;
                 let index = this.saveCharIndex;
                 this.endY = e.changedTouches[0].pageY;
                 let countY = Math.ceil((this.endY - this.startY)/this.LIHeight);
                 index += countY;
-                this.touchMouveSelected = this.chars[index];    
-                let distance = this.$refs[this.touchMouveSelected][0].offsetTop;  
-                this.$refs.vueCityContent.style.transform = `translateY(-${distance}px)`;  
-                console.log('cityTouchend',this.$refs[this.touchMouveSelected][0].offsetTop);                
-            },
-            cityListTouchstart(e){
-                this.startY2 = e.changedTouches[0].pageY;
-            },
-            cityListTouchend(e){
-                // event.preventDefault();
-                let xdistance = parseInt(this.$refs.vueCityContent.style.transform.replace(/[^0-9]+/g, '')||0);
-                this.endY2 = e.changedTouches[0].pageY;
-                let countY = Math.floor(this.endY2 - this.startY2);
-                xdistance += countY;
-                if(this.distance < 0){
-                    this.distance = 0;
-                }       
-                if(this.distance > this.domHeight){
-                    this.distance = this.domHeight;
-                }         
-                console.log("距离",xdistance);
-                this.$refs.vueCityContent.style.transform = `translateY(${xdistance}px)`;    
-            },            
+                this.touchMouveSelected = this.chars[index];
+                //这里做个判断，滑动超过Z之后，也滚动到Z的位置
+                if(this.touchMouveSelected == undefined){
+                    this.touchMouveSelected = 'Z';                    
+                }
+                //当前字母
+                console.log(this.touchMouveSelected);
+                const element = this.$refs[this.touchMouveSelected][0]
+                this.scroll.scrollToElement(element)                    
+
+            }        
             
         }
     }
@@ -124,9 +131,12 @@ export default {
 <style lang="scss" scoped>
 .vue-city-container{
     width: 100vw;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
     background: #f4f4f4;
     .vue-city-content{
+        // height: 100%;
+        
         .hot-city-list-box{
             background: #f8f8f8;
             border-top: 1px solid #e5e5e5;
@@ -182,11 +192,26 @@ export default {
             }            
         }
     }
+    .toast{                
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate3d(-50%,-50%,0);
+        width: 100px;
+        height: 100px;
+        border-radius: 3px;
+        background: #ccc;
+        color: #333;
+        font-size:20px; 
+        text-align: center;
+        line-height: 100px;       
+        box-shadow: 0 3px 3px #ccc;     
+    }
     .slidebar{
         position: fixed;
-        top: 8vh;
+        top: 50%;
+        transform: translateY(-50%);
         right: 0;
-        height: 100%;
         width: 30px;
         text-align: center;
         font-size: 12px;
