@@ -34,6 +34,7 @@
 import BScroll from 'better-scroll';
 const cityList = require('./city.js').citys;
 export default {
+        name:"vue-city",
         props: {
            hotCityList:{
                probeType:Array,
@@ -94,17 +95,17 @@ export default {
             },
             cityTouchstart(e){
                 this.isSHowToast = true;
-                this.LIHeight = e.target.offsetHeight;
-                this.startY = e.changedTouches[0].pageY;
+                this.LIHeight = e.target.offsetHeight;//字母标签的高度
+                this.startY = e.changedTouches[0].pageY;//开始触摸的坐标
                 this.toast = this.touchStratSelected = e.target.outerText;
-                this.saveCharIndex = this.chars.indexOf(this.touchStratSelected);              
+                this.saveCharIndex = this.chars.indexOf(this.touchStratSelected); //计算开始触摸时的字母在字母列表中的下标。            
             },
             cityTouchmove(e){
                 let index = this.saveCharIndex;
                 this.endY = e.changedTouches[0].pageY;
-                let countY = Math.ceil((this.endY - this.startY)/this.LIHeight);
+                let countY = Math.ceil((this.endY - this.startY)/this.LIHeight);//实时计算move的距离
                 index += countY;
-                this.toast = this.touchMouveSelected = this.chars[index];                 
+                this.toast = this.touchMouveSelected = this.chars[index];  //计算move过程中对应的字母               
             },
             cityTouchend(e){
                 console.log(e);
@@ -113,7 +114,7 @@ export default {
                 this.endY = e.changedTouches[0].pageY;
                 let countY = Math.ceil((this.endY - this.startY)/this.LIHeight);
                 index += countY;
-                this.touchMouveSelected = this.chars[index];
+                this.touchMouveSelected = this.chars[index];//计算end时对应的字母 
                 //这里做个判断，滑动超过Z之后，也滚动到Z的位置
                 if(this.touchMouveSelected == undefined){
                     this.touchMouveSelected = 'Z';                    
@@ -121,7 +122,7 @@ export default {
                 //当前字母
                 console.log(this.touchMouveSelected);
                 const element = this.$refs[this.touchMouveSelected][0]
-                this.scroll.scrollToElement(element)                    
+                this.scroll.scrollToElement(element)                   
 
             }        
             
