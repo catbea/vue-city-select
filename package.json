@@ -1,10 +1,11 @@
 {
   "name": "vue-city-select",
   "description": "A Vue.js project",
-  "version": "1.0.0",
-  "author": "brucedong <brucedong@aijiatui.com>",
+  "version": "1.0.1",
+  "author": "catbea",
   "license": "MIT",
-  "private": true,
+  "private": false,
+  "main": "dist/index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
@@ -19,6 +20,15 @@
     "last 2 versions",
     "not ie <= 8"
   ],
+  "keywords": [
+    "vue",
+    "vue-city"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/catbea/vue-city-select.git"
+  },
+  "homepage":"https://github.com/catbea/vue-city-select/blob/master/README.md",
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
