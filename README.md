@@ -24,10 +24,12 @@ For detailed explanation on how things work, consult the [docs for vue-loader](h
 npm i vue-city-select -S 
 
 在main.js中引入注册
-``` import vueCity from 'vue-city-select'
-``` vue.use(vueCity);
-然后就可以在项目中引用了
-
- ``` <vue-city :hotCityList="hotCityList" @changeCity="changeCity"></vue-city>
+``` 
+  import vueCity from 'vue-city-select'
+  vue.use(vueCity);
+  //然后就可以在项目中引用了,热门城市 hotCityList 参数可以根据自己的需求传或者不传
+  <vue-city :hotCityList="hotCityList" @changeCity="changeCity"></vue-city>
+  
+  ```
 
  注意这里的vue-city就是组件vueCity.vue中的name 的名称。否则会报错的。
