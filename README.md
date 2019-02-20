@@ -1,3 +1,5 @@
+## 效果图
+![Image text](https://github.com/catbea/vue-city-select/blob/master/3.png)
 # vue-city-select
 
 > A Vue.js project
